@@ -460,7 +460,7 @@
                         <p>Fotoğraf dosyasını sürükle ve bırak</p>
                         <small>veya tıklayarak dosya seç (PNG, JPG, JPEG)</small>
                     </label>
-                    <input type="file" id="imageInput" accept="image/png, image/jpeg, image/jpg, image/webp">
+                    <input type="file" id="imageInput" accept="image/png, image/jpeg, image/jpg, image/webp" multiple>
                     <div class="preview" id="preview"></div>
                 </div>
 
@@ -522,7 +522,7 @@
         // Başlatma
         emailjs.init(EMAILJS_PUBLIC_KEY);
 
-        let selectedImage = null;
+        let selectedImages = [];
         const uploadZone = document.getElementById('uploadZone');
         const imageInput = document.getElementById('imageInput');
         const preview = document.getElementById('preview');
@@ -554,32 +554,41 @@
         });
 
         function handleImageSelect() {
-            const file = imageInput.files[0];
-            if (!file) return;
+            const files = imageInput.files;
+            if (!files || files.length === 0) return;
 
-            if (!file.type.startsWith('image/')) {
-                showMessage('uploadStatus', 'Lütfen geçerli bir resim dosyası seçin!', 'error');
-                return;
-            }
+            selectedImages = [];
+            preview.innerHTML = '';
 
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                selectedImage = e.target.result;
-                preview.innerHTML = `
-                    <img src="${selectedImage}" alt="Önizleme">
-                    <div class="preview-info">
-                        ✓ ${file.name} | ${(file.size / 1024).toFixed(2)} KB
-                    </div>
-                `;
-                showMessage('uploadStatus', '✓ Fotoğraf başarıyla yüklendi!', 'success');
-            };
-            reader.readAsDataURL(file);
+            Array.from(files).forEach(file => {
+                if (!file.type.startsWith('image/')) {
+                    showMessage('uploadStatus', 'Lütfen sadece geçerli resim dosyaları seçin!', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    selectedImages.push(e.target.result);
+                    
+                    const div = document.createElement('div');
+                    div.style.marginBottom = '15px';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Önizleme" style="max-width: 100%; max-height: 300px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); border: 3px solid var(--accent); display: block; margin: 0 auto;">
+                        <div class="preview-info" style="margin-top: 10px; font-size: 0.9em; background: var(--bg-light); padding: 8px; border-radius: 6px; color: var(--text-primary);">
+                            ✓ ${file.name} | ${(file.size / 1024).toFixed(2)} KB
+                        </div>
+                    `;
+                    preview.appendChild(div);
+                };
+                reader.readAsDataURL(file);
+            });
+            showMessage('uploadStatus', '✓ Fotoğraflar başarıyla yüklendi!', 'success');
         }
 
         function sendEmailWithPDF() {
             // Validasyon
-            if (!selectedImage) {
-                showMessage('emailStatus', 'Lütfen önce bir fotoğraf yükleyin!', 'error');
+            if (selectedImages.length === 0) {
+                showMessage('emailStatus', 'Lütfen önce en az bir fotoğraf yükleyin!', 'error');
                 return;
             }
 
@@ -616,6 +625,11 @@
                 element.style.width = '800px';
                 element.style.padding = '40px';
                 element.style.backgroundColor = 'white';
+                let imagesHtml = '';
+                selectedImages.forEach(imgSrc => {
+                    imagesHtml += `<img src="${imgSrc}" style="max-width: 100%; border-radius: 8px; border: 3px solid #d4af37; margin-bottom: 30px; display: block; margin-left: auto; margin-right: auto;">`;
+                });
+
                 element.innerHTML = `
                     <div style="text-align: center; margin-bottom: 30px;">
                         <h1 style="color: #1e3a5f; margin: 0;">MANİSA TAŞIYICILAR KOOPERATİFİ</h1>
@@ -623,7 +637,7 @@
                     </div>
                     
                     <div style="border-top: 2px solid #1e3a5f; padding-top: 30px;">
-                        <img src="${selectedImage}" style="max-width: 100%; border-radius: 8px; border: 3px solid #d4af37; margin-bottom: 30px;">
+                        ${imagesHtml}
                         
                         <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 30px;">
                             <p style="margin: 10px 0;"><strong>Gönderici:</strong> ${senderName}</p>
@@ -704,7 +718,7 @@
             document.getElementById('senderEmail').value = '';
             document.getElementById('subject').value = 'Manisa Kooperatifi - Fotoğraf Gönderimi';
             document.getElementById('message').value = '';
-            selectedImage = null;
+            selectedImages = [];
             preview.innerHTML = '';
             imageInput.value = '';
             document.getElementById('emailStatus').style.display = 'none';
