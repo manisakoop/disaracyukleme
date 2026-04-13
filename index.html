@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,6 +52,7 @@
                 opacity: 0;
                 transform: translateY(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -68,8 +70,15 @@
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         h1 {
@@ -119,6 +128,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -172,7 +182,7 @@
             outline: none;
             border-color: var(--primary);
             background: linear-gradient(white, white) padding-box,
-                        linear-gradient(135deg, var(--primary), var(--primary-light)) border-box;
+                linear-gradient(135deg, var(--primary), var(--primary-light)) border-box;
             box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
         }
 
@@ -212,8 +222,15 @@
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 0.6; }
-            50% { opacity: 1; }
+
+            0%,
+            100% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
         }
 
         .file-upload-zone p {
@@ -228,7 +245,12 @@
         }
 
         #imageInput {
-            display: none;
+            width: 0.1px;
+            height: 0.1px;
+            opacity: 0;
+            overflow: hidden;
+            position: absolute;
+            z-index: -1;
         }
 
         .preview {
@@ -335,6 +357,7 @@
                 opacity: 0;
                 transform: translateX(-20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateX(0);
@@ -375,7 +398,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .spinner.active {
@@ -407,11 +432,14 @@
         footer {
     </style>
 </head>
+
 <body>
     <div class="container">
         <header>
             <div class="logo-section">
-                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO-j0TTkyCLJuyfHUXKe2PRasN9Y9V6Jw2cA&s" alt="Manisa Taşıyıcılar Kooperatifi Logo" style="max-width: 120px; margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRO-j0TTkyCLJuyfHUXKe2PRasN9Y9V6Jw2cA&s"
+                    alt="Manisa Taşıyıcılar Kooperatifi Logo"
+                    style="max-width: 120px; margin-bottom: 20px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));">
                 <div class="tagline">MANİSA TAŞIYICILAR KOOPERATİFİ</div>
                 <h1>Fotoğraf Portalı</h1>
                 <p class="subtitle">Fotoğrafları otomatik olarak PDF'e dönüştürüp gönder</p>
@@ -424,12 +452,14 @@
                 <h2><span>📸</span> Fotoğraf Yükle</h2>
 
                 <div class="form-group">
-                    <label for="imageInput">Fotoğraf Seç</label>
-                    <div class="file-upload-zone" id="uploadZone">
+                    <label for="imageInput"
+                        style="font-weight: 600; margin-bottom: 8px; display: block; color: var(--text-primary);">Fotoğraf
+                        Seç</label>
+                    <label class="file-upload-zone" id="uploadZone" for="imageInput" style="display: block;">
                         <div class="upload-icon">📁</div>
                         <p>Fotoğraf dosyasını sürükle ve bırak</p>
                         <small>veya tıklayarak dosya seç (PNG, JPG, JPEG)</small>
-                    </div>
+                    </label>
                     <input type="file" id="imageInput" accept="image/png, image/jpeg, image/jpg, image/webp">
                     <div class="preview" id="preview"></div>
                 </div>
@@ -454,7 +484,8 @@
 
                 <div class="form-group">
                     <label for="subject">Konu</label>
-                    <input type="text" id="subject" placeholder="E-mail konusu" value="Manisa Kooperatifi - Fotoğraf Gönderimi" required>
+                    <input type="text" id="subject" placeholder="E-mail konusu"
+                        value="Manisa Kooperatifi - Fotoğraf Gönderimi" required>
                 </div>
 
                 <div class="form-group">
@@ -476,7 +507,8 @@
         <footer>
             <p><span class="footer-accent">Manisa Taşıyıcılar Kooperatifi</span></p>
             <p>📧 banko2@manisakoop.com</p>
-            <p style="margin-top: 15px; font-size: 0.8em;">Bu portal fotoğrafları otomatik olarak PDF'e dönüştürüp belirtilen e-mail adresine gönderir.</p>
+            <p style="margin-top: 15px; font-size: 0.8em;">Bu portal fotoğrafları otomatik olarak PDF'e dönüştürüp
+                belirtilen e-mail adresine gönderir.</p>
         </footer>
     </div>
 
@@ -496,7 +528,8 @@
         const preview = document.getElementById('preview');
 
         // Dosya seçimi
-        uploadZone.addEventListener('click', () => imageInput.click());
+        // Dosya seçimi native label ile çözüldü, JS tarafındaki click dinleyicisine gerek yok:
+        // uploadZone.addEventListener('click', () => imageInput.click());
 
         imageInput.addEventListener('change', handleImageSelect);
 
@@ -624,7 +657,7 @@
 
                 html2pdf().set(opt).from(element).toPdf().output('datauristring').then((pdfDataUri) => {
                     document.body.removeChild(element);
-                    
+
                     // E-mail Gönder
                     const templateParams = {
                         to_email: RECIPIENT_EMAIL,
@@ -679,4 +712,5 @@
         }
     </script>
 </body>
+
 </html>
